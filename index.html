@@ -10,11 +10,14 @@
 <title>Financial Engine V15</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='45' fill='%230591e8'/%3E%3Ctext x='96' y='120' font-family='Poppins,sans-serif' font-size='80' font-weight='700' fill='white' text-anchor='middle'%3EDM%3C/text%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='45' fill='%230591e8'/%3E%3Ctext x='96' y='120' font-family='Poppins,sans-serif' font-size='80' font-weight='700' fill='white' text-anchor='middle'%3EDM%3C/text%3E%3C/svg%3E">
-<link rel="manifest" href="data:application/json,%7B%22name%22:%22Financial%20Engine%20V15%22,%22short_name%22:%22FE%20V15%22,%22start_url%22:%22/dimas_v15.html%22,%22scope%22:%22/dimas_v15.html%22,%22display%22:%22standalone%22,%22background_color%22:%22%230c101d%22,%22theme_color%22:%22%230591e8%22,%22icons%22:[%7B%22src%22:%22data:image/svg+xml,%25253Csvg%2520xmlns=%2527http://www.w3.org/2000/svg%2527%2520viewBox=%2527192%2520192%2527%25253E%25253Crect%2520width=%2527192%2527%2520height=%2527192%2527%2520rx=%2527%2527%2520fill=%2527%25230591e8%2527/%25253E%25253Ctext%2520x=%2527%2520y=%2527120%2527%2520font-family=%2527Poppins,sans-serif%2527%2520font-size=%2527%2528%2527%2520font-weight=%2527700%2527%2520fill=%2527white%2527%2520text-anchor=%2527middle%2527%25253EDM%25253C/text%25253E%25253C/svg%25253E%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22,%22purpose%22:%22any%22%7D]%7D">
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
+  /* ============================================================
+     PALET WARNA MALAM (default)
+     --grad = gradasi brand: navy -> blue -> cyan
+     ============================================================ */
   :root{
     --bg:#0c101d; --bg2:#070a12;
     --navy:#0232ac; --blue:#0466de; --cyan:#0591e8;
@@ -22,14 +25,15 @@
     --green:#1fd1a3; --amber:#f5b301;
     --panel:rgba(2,50,172,0.15); --card:rgba(4,102,222,0.10);
     --line:rgba(2,50,172,0.55);
+    --grad:linear-gradient(135deg,#0232ac 0%,#0466de 55%,#0591e8 100%);
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{margin:0;padding:0;}
   body{
     background:
-      radial-gradient(1200px 600px at 80% -10%, rgba(5,145,232,0.10), transparent 60%),
-      radial-gradient(900px 500px at -10% 110%, rgba(251,3,107,0.08), transparent 55%),
-      var(--bg);
+      radial-gradient(1200px 600px at 80% -10%, rgba(5,145,232,0.12), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(251,3,107,0.07), transparent 55%),
+      linear-gradient(160deg, #06091a 0%, #071c4d 50%, #054a7a 100%);
     color:var(--white);
     font-family:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
     font-weight:400; overscroll-behavior-y:none;
@@ -62,7 +66,7 @@
   select{appearance:none; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23a6aed5' viewBox='0 0 16 16'><path d='M8 11L3 6h10z'/></svg>"); background-repeat:no-repeat; background-position:right 12px center; padding-right:30px;}
   .btn{border:none; border-radius:12px; padding:12px; font-family:inherit; font-weight:700; font-size:13px; cursor:pointer; color:#fff; width:100%; transition:filter .15s, transform .05s}
   .btn:active{transform:scale(.99)}
-  .btn-blue{background:linear-gradient(135deg,var(--blue),var(--cyan))}
+  .btn-blue{background:var(--grad)}
   .btn-pink{background:linear-gradient(135deg,#c4035a,var(--pink))}
   .btn-ghost{background:rgba(12,16,29,0.7); border:1px solid var(--line)}
   .btn-green{background:linear-gradient(135deg,#0f9b7c,var(--green)); color:#04130f}
@@ -89,28 +93,83 @@
   .hidden{display:none !important}
   .seg{display:flex; background:var(--bg2); border:1px solid var(--line); border-radius:12px; padding:3px; gap:3px}
   .seg button{flex:1; background:none; border:none; color:var(--slate); font-family:inherit; font-size:11px; font-weight:600; padding:8px 4px; border-radius:9px; cursor:pointer}
-  .seg button.on{background:var(--blue); color:#fff}
+  .seg button.on{background:var(--grad); color:#fff}
   .canvas-wrap{position:relative; height:170px}
   .toast{position:fixed; left:50%; bottom:22px; transform:translateX(-50%) translateY(20px); background:#0a0e1a; border:1px solid var(--cyan); color:#fff; padding:11px 16px; border-radius:12px; font-size:12px; opacity:0; pointer-events:none; transition:.25s; z-index:50; max-width:90%}
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
   .sub{display:flex; justify-content:space-between; font-size:11px; padding:3px 0}
   /* === V15.1: Bottom Navigation (menu seperti m-banking) === */
   .app{padding-bottom:86px}
-  .bottomnav{position:fixed; left:50%; transform:translateX(-50%); bottom:10px; width:calc(100% - 24px); max-width:430px; display:flex; gap:4px; background:rgba(10,14,26,0.96); border:1px solid var(--line); border-radius:18px; padding:7px; z-index:40; backdrop-filter:blur(8px); box-shadow:0 8px 28px rgba(0,0,0,0.45)}
+  .bottomnav{position:fixed; left:50%; transform:translateX(-50%); bottom:10px; width:calc(100% - 24px); max-width:430px; display:flex; gap:4px; background:linear-gradient(135deg, rgba(6,9,26,0.97) 0%, rgba(7,28,77,0.97) 55%, rgba(5,74,122,0.97) 100%); border:1px solid var(--line); border-radius:18px; padding:7px; z-index:40; backdrop-filter:blur(8px); box-shadow:0 8px 28px rgba(0,0,0,0.45)}
   .bottomnav button{flex:1; background:none; border:none; color:var(--slate); font-family:inherit; font-size:9px; display:flex; flex-direction:column; align-items:center; gap:3px; padding:7px 2px; border-radius:12px; cursor:pointer}
-  .bottomnav button.on{background:var(--navy); color:#fff}
+  .bottomnav button.on{background:var(--grad); color:#fff}
   .bottomnav button span{letter-spacing:.06em; text-transform:uppercase}
   .bottomnav button i{font-style:normal; font-size:16px}
   .namechip{display:inline-flex; align-items:center; gap:5px; cursor:pointer; color:var(--cyan); font-size:12px; font-weight:600}
   .namechip:active{opacity:.7}
-/* === V15.2: Dark/Light Mode Toggle === */
-  body.light-mode {
-    --bg:#ffffff; --bg2:#f5f5f5;
-    --navy:#e3f2fd; --blue:#2196f3; --cyan:#0288d1;
-    --slate:#424242; --pink:#e91e63; --white:#0c101d;
-    --green:#4caf50; --amber:#ff9800;
-    --panel:rgba(33,150,243,0.10); --card:rgba(33,150,243,0.08);
-    --line:rgba(33,150,243,0.25);
+  /* === PAGE VISIBILITY (for navigation) === */
+  .pg{display:block}
+  .pg.hidden{display:none}
+  /* === Tombol Tema (ikon bulan/matahari otomatis ganti) === */
+  .themepill{display:inline-flex; align-items:center; gap:5px; background:var(--grad)}
+  .themepill svg{display:block}
+  .themepill .ic-sun{display:none}
+  body.light-mode .themepill .ic-moon{display:none}
+  body.light-mode .themepill .ic-sun{display:block}
+
+  /* ============================================================
+     V15.2: MODE TERANG (SIANG)
+     Gradasi: putih -> biru sangat muda -> biru neon muda.
+     Semua elemen yang background-nya gelap "permanen"
+     di-override di bawah supaya tetap enak dibaca.
+     ============================================================ */
+  body.light-mode{
+    --bg:#f6f9fc; --bg2:#ffffff;
+    --navy:#1e88e5; --blue:#1e88e5; --cyan:#0277bd;
+    --slate:#5a6b8c; --pink:#d81b60; --white:#16213e;
+    --green:#0e9f6e; --amber:#d97706;
+    --panel:rgba(255,255,255,0.80); --card:rgba(2,136,209,0.07);
+    --line:rgba(2,136,209,0.30);
+    --grad:linear-gradient(135deg,#42a5f5 0%,#1e88e5 55%,#0277bd 100%);
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(2,136,209,0.14), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(216,27,96,0.05), transparent 55%),
+      linear-gradient(160deg, #fbfdff 0%, #e3f2fd 45%, #b3e2fa 100%);
+  }
+  body.light-mode .acct{background:#ffffff}
+  body.light-mode .chip{background:#ffffff; color:#16213e}
+  body.light-mode .btn-ghost{background:#ffffff; color:#16213e}
+  body.light-mode input, body.light-mode select{color:#16213e}
+  body.light-mode select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%235a6b8c' viewBox='0 0 16 16'><path d='M8 11L3 6h10z'/></svg>")}
+  body.light-mode .seg{background:#e9f1fa}
+  body.light-mode .tx{background:#ffffff}
+  body.light-mode .toast{background:#ffffff; color:#16213e}
+  body.light-mode .bar{background:rgba(2,136,209,0.12)}
+  body.light-mode .link:active{color:#16213e}
+  body.light-mode .ins{border-bottom-color:rgba(90,107,140,0.25)}
+  body.light-mode .bottomnav{
+    background:linear-gradient(135deg, rgba(255,255,255,0.97) 0%, rgba(227,242,253,0.97) 55%, rgba(179,226,250,0.97) 100%);
+    box-shadow:0 8px 28px rgba(2,119,189,0.18);
+  }
+
+  /* ============================================================
+     V15.3: MODE DESKTOP (layar >= 768px)
+     Panel jadi 2 kolom, header & footer tetap lebar penuh.
+     ============================================================ */
+  @media (min-width:768px){
+    body{padding:28px 20px}
+    .app{max-width:960px; display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start; padding-bottom:100px}
+    .app > .between{grid-column:1/-1}
+    .canvas-wrap{height:230px}
+    .title{font-size:26px}
+    .bottomnav{max-width:540px; bottom:16px}
+  }
+  @media (hover:hover){
+    .btn:hover{filter:brightness(1.08)}
+    .pill:hover{filter:brightness(1.12)}
+    .chip:hover{border-color:var(--cyan)}
+    .link:hover{color:var(--cyan)}
+    .bottomnav button:hover{color:var(--cyan)}
   }
 </style>
 </head>
@@ -125,12 +184,11 @@
       <h2 id="monthTitle" class="title bold-i">JUNI 2026</h2>
     </div>
     <div class="row">
-      <button class="pill" style="background:#4a5a9a" onclick="toggleTheme()">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-    <circle cx="12" cy="12" r="10" fill="yellow"/>
-  </svg>
-  DARK/LIGHT
-</button>
+      <button class="pill themepill" onclick="toggleTheme()" title="Ganti tema">
+        <svg class="ic-moon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="ic-sun" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        TEMA
+      </button>
       <button class="pill" onclick="exportData()">CADANGKAN</button>
       <button class="pill" onclick="importData()">PULIHKAN</button>
     </div>
@@ -943,26 +1001,30 @@ function toast(msg){
   clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),2600);
 }
 
-/* ---------- INIT ---------- */
-initTheme(); fillAccSelects(); fillSub(); setType('Spend'); render(); showPage('home');
-/* ---------- V15.2: Dark/Light Mode Toggle ---------- */
+/* ---------- V15.2: MODE GELAP / TERANG ----------
+   toggleTheme()  = saklar: tambah/lepas class light-mode di <body>
+   initTheme()    = saat app dibuka, baca pilihan terakhir dari localStorage
+   applyChartTheme() = warna teks & garis chart ikut menyesuaikan tema */
+function applyChartTheme(){
+  if(!chart) return;
+  const light = document.body.classList.contains('light-mode');
+  chart.options.plugins.legend.labels.color = light ? '#5a6b8c' : '#a6aed5';
+  chart.data.datasets[0].borderColor = light ? '#ffffff' : '#0c101d';
+  chart.update();
+}
 function toggleTheme(){
-  const isDark = document.body.classList.contains('light-mode');
-  if(isDark){ 
-    document.body.classList.remove('light-mode');
-    localStorage.setItem('themeMode', 'dark');
-  } else {
-    document.body.classList.add('light-mode');
-    localStorage.setItem('themeMode', 'light');
-  }
+  document.body.classList.toggle('light-mode');
+  const light = document.body.classList.contains('light-mode');
+  localStorage.setItem('themeMode', light ? 'light' : 'dark');
+  applyChartTheme();
+  toast(light ? 'Mode terang aktif ☀️' : 'Mode gelap aktif 🌙');
+}
+function initTheme(){
+  if(localStorage.getItem('themeMode')==='light') document.body.classList.add('light-mode');
 }
 
-function initTheme(){
-  const saved = localStorage.getItem('themeMode');
-  if(saved === 'light'){
-    document.body.classList.add('light-mode');
-  }
-}
+/* ---------- INIT ---------- */
+initTheme(); fillAccSelects(); fillSub(); setType('Spend'); render(); showPage('home'); applyChartTheme();
 </script>
 </body>
 </html>
