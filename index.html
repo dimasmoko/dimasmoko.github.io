@@ -176,7 +176,6 @@
 <body>
 <div class="app">
 
-  <!-- HEADER -->
   <div class="between">
     <div>
       <div class="namechip" onclick="editName()"><span id="userName">👤 Atur Nama</span><span style="font-size:10px">✎</span></div>
@@ -194,7 +193,6 @@
     </div>
   </div>
 
-  <!-- HERO -->
   <div class="panel pg pg-home">
     <div class="between">
       <div>
@@ -223,7 +221,6 @@
     </div>
   </div>
 
-  <!-- PETA LIKUIDITAS -->
   <div class="panel pg pg-home">
     <div class="between" style="margin-bottom:12px">
       <div class="label">Uang di Tiap Akun</div>
@@ -235,7 +232,6 @@
     <div class="grid3" id="acctGrid"></div>
   </div>
 
-  <!-- TABUNGAN + KASBON -->
   <div class="panel pg pg-tab">
     <div class="between">
       <div>
@@ -270,13 +266,11 @@
     </div>
   </div>
 
-  <!-- QUICK ACTIONS -->
   <div class="panel pg pg-home">
     <div class="label" style="margin-bottom:10px">Catat Cepat (sekali ketuk)</div>
     <div class="scrollx" id="quickRow"></div>
   </div>
 
-  <!-- INPUT TRANSAKSI -->
   <div class="panel pg pg-home">
     <div class="label" style="margin-bottom:10px">Catat Transaksi</div>
     <div class="seg" id="typeSeg" style="margin-bottom:10px">
@@ -333,13 +327,11 @@
     <button class="btn btn-ghost" style="margin-top:8px; font-size:11px; padding:10px" onclick="undoLast()">↩ Undo Transaksi Terakhir</button>
   </div>
 
-  <!-- INSIGHT -->
   <div class="panel pg pg-analisa">
     <div class="label" style="margin-bottom:6px">Analisa Otomatis</div>
     <div id="insights"></div>
   </div>
 
-  <!-- ANALITIK -->
   <div class="panel pg pg-analisa">
     <div class="between" style="margin-bottom:10px">
       <div class="label">Analisa Pengeluaran</div>
@@ -350,7 +342,6 @@
     <div id="topSpend"></div>
   </div>
 
-  <!-- GOAL -->
   <div class="panel pg pg-tab">
     <div class="between" style="margin-bottom:10px">
       <div class="label">Target Tabungan (Goal)</div>
@@ -359,13 +350,11 @@
     <div id="goalList"></div>
   </div>
 
-  <!-- FORECAST + SUMMARY -->
   <div class="panel pg pg-analisa">
     <div class="label" style="margin-bottom:10px">Ringkasan & Perkiraan Bulan Ini</div>
     <div id="summaryBox"></div>
   </div>
 
-  <!-- LEDGER -->
   <div class="panel pg pg-riwayat">
     <div class="between" style="margin-bottom:10px">
       <div class="label">Riwayat Transaksi (Buku Besar)</div>
@@ -382,7 +371,6 @@
     <button class="link" style="color:var(--cyan)" onclick="exportData()">Cadangkan Sekarang</button>
   </div>
 
-  <!-- FOOTER -->
   <div class="between pg pg-riwayat" style="padding:0 4px 10px">
     <button class="link" onclick="tutupBuku()" style="color:var(--amber)">📦 Tutup Buku Bulan Ini</button>
     <button class="link" onclick="hardReset()" style="color:var(--pink)">Hapus Semua Data</button>
@@ -391,7 +379,6 @@
 
 <div id="toast" class="toast"></div>
 
-<!-- BOTTOM NAVIGATION (menu seperti m-banking) -->
 <div class="bottomnav">
   <button data-pg="home" class="on" onclick="showPage('home')"><i>🏠</i><span>Beranda</span></button>
   <button data-pg="tab" onclick="showPage('tab')"><i>🏦</i><span>Tabungan</span></button>
@@ -968,7 +955,6 @@ function editIncomeSchedule(){
   toast(`Jadwal ${s.key} diperbarui`);
 }
 
-</parameter>
 /* ---------- FORECAST ---------- */
 function forecast(s){
   const d=new Date(); const dayNow=d.getDate();
