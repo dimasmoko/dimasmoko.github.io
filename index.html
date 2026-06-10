@@ -125,11 +125,11 @@
   <div class="panel pg pg-home">
     <div class="between">
       <div>
-        <div class="label">Total Uang Aktif (Likuiditas)</div>
+        <div class="label">Total Uang Bisa Dipakai</div>
         <h1 id="heroLiq" class="big bold">Rp 0</h1>
       </div>
       <div style="text-align:right">
-        <div class="label">Kekayaan Bersih</div>
+        <div class="label">Total Uang Keseluruhan</div>
         <h3 id="heroNet" class="mid bold cyan">Rp 0</h3>
         <div class="xxs muted" style="margin-top:2px">uang + tabungan − utang</div>
       </div>
@@ -154,7 +154,7 @@
   <div class="panel pg pg-home">
     <div class="between" style="margin-bottom:12px">
       <div class="label">Uang di Tiap Akun</div>
-      <button class="link cyan" onclick="openReconcile()">🔄 Samakan Saldo Asli</button>
+      <button class="link cyan" onclick="openReconcile()">🔄 Sesuaikan Saldo Asli</button>
     </div>
     <div class="grid3" id="acctGrid"></div>
   </div>
@@ -333,8 +333,8 @@
 const STORAGE_KEY = 'dimasV15';
 const PHYSICAL = ['mandiri','cash','blu','btn','ewallet','bri'];
 const ACC_LABEL = {
-  mandiri:'Mandiri', cash:'Cash', blu:'blu (Dobe)',
-  btn:'BTN (Dinas)', ewallet:'E-Wallet', bri:'BRI (Ortu)'
+  mandiri:'Livin Mandiri', cash:'Cash', blu:'bluBCA',
+  btn:'Bale by BTN', ewallet:'E-Wallet', bri:'BRImo'
 };
 const TARGET_LONG = 2500000;
 const TARGET_SHORT = 500000;
@@ -346,8 +346,8 @@ const SUBCATS = {
 };
 
 const QUICK = [
-  {emo:'🚬', label:'Rokok 24k', cat:'Wants', sub:'Rokok', amt:24000, acc:'cash'},
-  {emo:'☕', label:'Kopi 20k', cat:'Wants', sub:'Nongkrong / Kopi', amt:20000, acc:'mandiri'},
+  {emo:'🚬', label:'Rokok 18k', cat:'Wants', sub:'Rokok', amt:18000, acc:'cash'},
+  {emo:'☕', label:'Kopi 30k', cat:'Wants', sub:'Nongkrong / Kopi', amt:30000, acc:'mandiri'},
   {emo:'🍜', label:'Makan 30k', cat:'Needs', sub:'Makan Pokok', amt:30000, acc:'mandiri'},
   {emo:'🍛', label:'Makan Cash 25k', cat:'Needs', sub:'Makan Pokok', amt:25000, acc:'cash'},
   {emo:'⛽', label:'Bensin 20k', cat:'Needs', sub:'Transport/Bensin', amt:20000, acc:'mandiri'},
