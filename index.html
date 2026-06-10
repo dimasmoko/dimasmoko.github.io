@@ -227,7 +227,10 @@
   <div class="panel pg pg-home">
     <div class="between" style="margin-bottom:12px">
       <div class="label">Uang di Tiap Akun</div>
-      <button class="link cyan" onclick="openReconcile()">🔄 Sesuaikan Saldo Asli</button>
+      <div class="row" style="gap:10px">
+        <button class="link cyan" onclick="editIncomeSchedule()">📅 Jadwal Gaji</button>
+        <button class="link cyan" onclick="openReconcile()">🔄 Saldo Asli</button>
+      </div>
     </div>
     <div class="grid3" id="acctGrid"></div>
   </div>
@@ -794,6 +797,7 @@ function hardReset(){
 function buildInsights(s){
   const out=[]; const c=s.c;
   const liq=s.t.liq;
+  out.push(...forwardInsights(s)); // V15.4: insight maju tampil paling atas
   // 1. aman belanja
   const perDay=Math.floor(liq/daysLeft());
   out.push({c:'var(--green)', t:`Aman dibelanjakan ±<b>${rp(perDay)}/hari</b> (${daysLeft()} hari tersisa bulan ini).`});
@@ -834,7 +838,137 @@ function topSpendData(limit){
   }
   return Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,limit||5);
 }
+/* ============================================================
+   V15.4: JADWAL GAJI + INSIGHT MAJU (FORWARD-LOOKING)
+   ------------------------------------------------------------
+   Tujuan: sistem tidak cuma lihat "saldo sekarang", tapi juga
+   "kapan ada gaji lagi" supaya bisa kasih saran ke depan.
+   Self-healing: jadwal default muncul sendiri, tidak perlu
+   utak-atik state lama.
+   ============================================================ */
 
+// Jadwal default — diambil dari pola gaji Dimas.
+// day = tanggal biasa masuk (0 = tidak pasti, tidak dihitung untuk safety)
+function defaultIncomeSchedule(){
+  return [
+    {key:'SOPAL',    day:28, est:3200000, certain:true},
+    {key:'DOBE',     day:26, est:3000000, certain:true},
+    {key:'HADES',    day:5,  est:3500000, certain:true},
+    {key:'PEMKOT',   day:0,  est:1900000, certain:false},
+    {key:'Freelance',day:0,  est:0,       certain:false},
+  ];
+}
+
+// Pastikan jadwal selalu ada (self-healing, tanpa edit load())
+function getSchedule(){
+  if(!Array.isArray(state.incomeSchedule) || !state.incomeSchedule.length){
+    state.incomeSchedule = defaultIncomeSchedule();
+    save();
+  }
+  return state.incomeSchedule;
+}
+
+// Cek status tiap sumber gaji bulan ini:
+// received = sudah masuk | upcoming = belum, tanggalnya di depan
+// overdue = belum, tanggalnya sudah lewat (telat!) | uncertain = tidak pasti
+function incomeStatus(){
+  const sched = getSchedule();
+  const dayNow = new Date().getDate();
+  const mk = monthKey();
+  // sumber mana yang SUDAH tercatat masuk bulan ini (baca dari ledger)
+  const received = new Set();
+  for(const l of activeLogs()){
+    if(l.type==='Inflow' && String(l.date).slice(0,7)===mk){
+      received.add(String(l.src||'').toUpperCase());
+    }
+  }
+  return sched.map(s=>{
+    const isIn = received.has(s.key.toUpperCase());
+    let status;
+    if(isIn) status='received';
+    else if(!s.certain || !s.day) status='uncertain';
+    else if(s.day >= dayNow) status='upcoming';
+    else status='overdue';
+    return {...s, status, daysAway: (s.day>=dayNow)? s.day-dayNow : null};
+  });
+}
+
+// Gaji berikutnya yang paling dekat (yang pasti & belum masuk)
+function nextIncome(){
+  const up = incomeStatus().filter(s=>s.status==='upcoming');
+  if(!up.length) return null;
+  up.sort((a,b)=>a.daysAway-b.daysAway);
+  return up[0];
+}
+
+// INI INTINYA: insight yang melihat ke depan
+function forwardInsights(s){
+  const out=[];
+  const liq = s.t.liq;
+  const dayNow = new Date().getDate();
+  const avgDay = Math.round(s.spend/Math.max(1,dayNow)); // rata2 belanja/hari sejauh ini
+
+  // 1) Peringatan gaji telat (paling penting → taruh pertama)
+  const overdue = incomeStatus().filter(s=>s.status==='overdue');
+  for(const o of overdue){
+    out.push({c:'var(--pink)', t:`🚨 <b>${o.key}</b> biasanya masuk tanggal ${o.day}, sekarang sudah tanggal ${dayNow} dan belum tercatat. Cek: telat, atau lupa input?`});
+  }
+
+  // 2) Gaji berikutnya + apakah saldo cukup sampai gajian
+  const next = nextIncome();
+  if(next){
+    const days = next.daysAway===0 ? 1 : next.daysAway;
+    const needed = avgDay*days;            // perkiraan belanja sampai gajian
+    const safeDaily = Math.floor(liq/days); // batas aman/hari sampai gajian
+    let warn, color;
+    if(liq >= needed*1.5){ warn='Saldomu aman sampai gajian. 👍'; color='var(--green)'; }
+    else if(liq >= needed){ warn='Saldomu cukup, tapi tipis. Jaga belanja.'; color='var(--amber)'; }
+    else { warn=`Saldomu <b>kurang ${rp(needed-liq)}</b> untuk sampai gajian dengan pola belanja sekarang. Rem belanja!`; color='var(--pink)'; }
+
+    out.push({c:'var(--cyan)', t:`💰 Gaji berikutnya: <b>${next.key}</b> ±${rp(next.est)} dalam <b>${next.daysAway} hari</b> (tgl ${next.day}).`});
+    out.push({c:color, t:`Sampai gajian, aman belanja <b>${rp(safeDaily)}/hari</b>. ${warn}`});
+  } else {
+    // tidak ada gaji pasti tersisa bulan ini
+    const anyUncertain = incomeStatus().some(s=>s.status==='uncertain');
+    if(anyUncertain){
+      out.push({c:'var(--amber)', t:`Tidak ada gaji pasti tersisa bulan ini. Ada sumber tidak pasti (mis. PEMKOT/Freelance) — jangan diandalkan untuk belanja wajib.`});
+    }
+  }
+
+  // 3) Proyeksi target tabungan: bakal tercapai atau tidak?
+  const sisaTarget = TARGET_TOTAL - s.saved;
+  if(sisaTarget>0 && next){
+    if(next.est >= sisaTarget){
+      out.push({c:'var(--green)', t:`Target tabungan 3jt akan <b>tercapai</b> saat ${next.key} masuk (auto-tabung sisihkan ${rp(sisaTarget)}).`});
+    } else {
+      out.push({c:'var(--amber)', t:`Saat ${next.key} masuk, tabungan masih kurang <b>${rp(sisaTarget-next.est)}</b> dari target. Butuh sumber lain.`});
+    }
+  }
+
+  return out;
+}
+
+// Editor jadwal gaji (input sekali, sistem ingat)
+function editIncomeSchedule(){
+  const sched = getSchedule();
+  const ringkas = sched.map(s=> `• ${s.key}: ${s.day? 'tgl '+s.day : 'tidak pasti'} (±${rp(s.est)})`).join('\n');
+  const pick = prompt(`JADWAL GAJI SEKARANG:\n${ringkas}\n\nMau ubah yang mana? ketik nama sumbernya:\n(SOPAL / DOBE / HADES / PEMKOT / Freelance)`, 'SOPAL');
+  if(!pick) return;
+  const s = sched.find(x=>x.key.toUpperCase()===pick.trim().toUpperCase());
+  if(!s){ toast('Sumber tidak ditemukan'); return; }
+  const dIn = prompt(`Tanggal ${s.key} biasa masuk? (1–31, atau 0 kalau tidak pasti)`, s.day);
+  if(dIn===null) return;
+  const d = Math.max(0, Math.min(31, parseInt(dIn)||0));
+  const eIn = prompt(`Perkiraan nominal ${s.key}? (Rp)`, s.est);
+  if(eIn===null) return;
+  s.day = d;
+  s.est = num(eIn);
+  s.certain = d>0;
+  save(); render();
+  toast(`Jadwal ${s.key} diperbarui`);
+}
+
+</parameter>
 /* ---------- FORECAST ---------- */
 function forecast(s){
   const d=new Date(); const dayNow=d.getDate();
