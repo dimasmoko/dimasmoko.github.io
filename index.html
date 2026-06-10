@@ -103,6 +103,15 @@
   .bottomnav button i{font-style:normal; font-size:16px}
   .namechip{display:inline-flex; align-items:center; gap:5px; cursor:pointer; color:var(--cyan); font-size:12px; font-weight:600}
   .namechip:active{opacity:.7}
+/* === V15.2: Dark/Light Mode Toggle === */
+  body.light-mode {
+    --bg:#ffffff; --bg2:#f5f5f5;
+    --navy:#e3f2fd; --blue:#2196f3; --cyan:#0288d1;
+    --slate:#424242; --pink:#e91e63; --white:#0c101d;
+    --green:#4caf50; --amber:#ff9800;
+    --panel:rgba(33,150,243,0.10); --card:rgba(33,150,243,0.08);
+    --line:rgba(33,150,243,0.25);
+  }
 </style>
 </head>
 <body>
@@ -116,6 +125,12 @@
       <h2 id="monthTitle" class="title bold-i">JUNI 2026</h2>
     </div>
     <div class="row">
+      <button class="pill" style="background:#4a5a9a" onclick="toggleTheme()">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+    <circle cx="12" cy="12" r="10" fill="yellow"/>
+  </svg>
+  DARK/LIGHT
+</button>
       <button class="pill" onclick="exportData()">CADANGKAN</button>
       <button class="pill" onclick="importData()">PULIHKAN</button>
     </div>
@@ -929,7 +944,25 @@ function toast(msg){
 }
 
 /* ---------- INIT ---------- */
-fillAccSelects(); fillSub(); setType('Spend'); render(); showPage('home');
+initTheme(); fillAccSelects(); fillSub(); setType('Spend'); render(); showPage('home');
+/* ---------- V15.2: Dark/Light Mode Toggle ---------- */
+function toggleTheme(){
+  const isDark = document.body.classList.contains('light-mode');
+  if(isDark){ 
+    document.body.classList.remove('light-mode');
+    localStorage.setItem('themeMode', 'dark');
+  } else {
+    document.body.classList.add('light-mode');
+    localStorage.setItem('themeMode', 'light');
+  }
+}
+
+function initTheme(){
+  const saved = localStorage.getItem('themeMode');
+  if(saved === 'light'){
+    document.body.classList.add('light-mode');
+  }
+}
 </script>
 </body>
 </html>
